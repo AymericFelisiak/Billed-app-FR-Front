@@ -6,6 +6,7 @@ import USERS_TEST from '../constants/usersTest.js';
 import Logout from './Logout.js';
 
 export const filteredBills = (data, status) => {
+  console.log(status);
   return (data && data.length)
     ? data.filter(bill => {
       let selectCondition;

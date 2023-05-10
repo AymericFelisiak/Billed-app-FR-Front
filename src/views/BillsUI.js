@@ -24,6 +24,9 @@ const rows = (data) => {
 };
 
 export default ({ data: bills, loading, error }) => {
+  if (bills) {
+    bills.sort((a, b) => a.date < b.date ? 1 : -1);
+  }
   const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -58,7 +61,7 @@ export default ({ data: bills, loading, error }) => {
         <div id="data-table">
         <table id="example" class="table table-striped" style="width:100%">
           <thead>
-              <tr>
+             <tr>
                 <th>Type</th>
                 <th>Nom</th>
                 <th>Date</th>

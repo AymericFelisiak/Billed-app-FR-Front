@@ -117,3 +117,7 @@
   cursor: pointer;
 }
 
+.arrow-icon.rotated{
+  transform: rotate(0deg);
+}
+

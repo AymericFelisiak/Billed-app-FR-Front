@@ -20,10 +20,10 @@ export default class NewBill {
     e.preventDefault();
     const inputField = this.document.querySelector('input[data-testid="file"]');
     const file = inputField.files[0];
-    const fileNamePattern = /[A-z0-9]+.(png|jpg|jpeg)$/;
+    const fileType = file.type;
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-    if (fileName.match(fileNamePattern)) {
+    if (fileType === 'image/png' || fileType === 'image/jpg' || fileType === 'image/jpeg') {
       inputField.setCustomValidity('');
       const formData = new FormData();
       const email = JSON.parse(localStorage.getItem('user')).email;

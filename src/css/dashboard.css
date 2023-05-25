@@ -49,6 +49,10 @@ body {
   align-items: center;
 }
 
+.status-bills-header.spaced {
+  margin-top: 20px;
+}
+
 .status-bills-container h3 {
   font-weight: 500;
   font-size: 24px;

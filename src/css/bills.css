@@ -50,8 +50,10 @@
   border: 2px solid #F3F5FA;
   box-sizing: border-box;
   border-radius: 10px;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
   height: 70vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .icon-actions {

@@ -3,7 +3,7 @@ import VerticalLayout from './VerticalLayout.js';
 export default () => {
   return (`
     <div class='layout'>
-      ${VerticalLayout(120)}
+      ${VerticalLayout()}
       <div class='content'>
         <div class='content-header'>
           <div class='content-title'> Envoyer une note de frais </div>

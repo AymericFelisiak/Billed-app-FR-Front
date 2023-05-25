@@ -12,7 +12,9 @@
   border-radius: 10px;
   padding: 23px;
   width: calc(100% - 550px);
-  min-height: calc(100% - 92px);
+  height: 90vh;
+  max-height: 90vh;
+  overflow: auto;
 }
 
 .dashboard-form-container h3 {
@@ -27,11 +29,14 @@
   position: absolute;
   left: 120px;
   top: 52px;
+  height: 90vh;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .status-bills-container {
-  max-height: 70vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .status-bills-header {

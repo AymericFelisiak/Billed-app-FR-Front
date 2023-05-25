@@ -95,11 +95,9 @@ export default class {
       $('.dashboard-right-container div').html(`
         <div id="big-billed-icon" data-testid="big-billed-icon"> ${BigBilledIcon} </div>
       `);
-      $('.vertical-navbar').css({ height: '120vh' });
     } else {
       currentBill.addClass('clicked');
       $('.dashboard-right-container div').html(DashboardFormUI(bill));
-      $('.vertical-navbar').css({ height: '150vh' });
     }
     if (previousBill.length) {
       previousBill.removeClass('clicked');

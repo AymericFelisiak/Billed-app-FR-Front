@@ -11,7 +11,7 @@ export default () => {
   if (user && user.type === 'Employee') {
     return (
         `
-        <div class='vertical-navbar''>
+        <div class='vertical-navbar'>
           <div class='layout-title'> Billed </div>
           <div id='layout-icon1' data-testid="icon-window">
             ${WindowIcon}
@@ -28,7 +28,7 @@ export default () => {
   } else {
     return (
         `
-        <div class='vertical-navbar''>
+        <div class='vertical-navbar'>
           <div class='layout-title'> Billed </div>
             <div id='layout-disconnect' data-testid='layout-disconnect'>
               ${DisconnectIcon}

@@ -52,7 +52,7 @@
   border-radius: 10px;
   margin-bottom: 16px;
   height: 70vh;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 

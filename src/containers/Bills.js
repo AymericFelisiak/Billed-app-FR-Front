@@ -8,7 +8,9 @@ export default class {
     this.onNavigate = onNavigate;
     this.store = store;
     const buttonNewBill = document.querySelector('button[data-testid="btn-new-bill"]');
+    const sideBarBtnNewBill = document.querySelector('div[data-testid="icon-mail"]');
     if (buttonNewBill) buttonNewBill.addEventListener('click', this.handleClickNewBill);
+    if (sideBarBtnNewBill) sideBarBtnNewBill.addEventListener('click', this.handleClickNewBill);
     const iconEye = document.querySelectorAll('div[data-testid="icon-eye"]');
     if (iconEye) {
       iconEye.forEach(icon => {

@@ -126,8 +126,9 @@ export default class {
       status: 'refused',
       commentAdmin: $('#commentary2').val()
     };
-    this.updateBill(newBill);
-    this.onNavigate(ROUTES_PATH.Dashboard);
+    this.updateBill(newBill).then(() => {
+      this.onNavigate(ROUTES_PATH.Dashboard);
+    })
   };
 
   handleShowTickets (e, bills, index) {

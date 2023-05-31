@@ -2,12 +2,13 @@
  * @jest-environment jsdom
  */
 
-import { screen, waitFor } from '@testing-library/dom';
+import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import BillsUI from '../views/BillsUI.js';
+import Bills from '../containers/Bills.js';
 import { bills } from '../fixtures/bills.js';
-import { ROUTES_PATH } from '../constants/routes.js';
+import { ROUTES, ROUTES_PATH } from '../constants/routes.js';
 import { localStorageMock } from '../__mocks__/localStorage.js';
-
+import mockStore from '../__mocks__/store.js';
 import router from '../app/Router.js';
 
 describe('Given I am connected as an employee', () => {
@@ -25,6 +26,8 @@ describe('Given I am connected as an employee', () => {
       await waitFor(() => screen.getByTestId('icon-window'));
       const windowIcon = screen.getByTestId('icon-window');
       // to-do write expect expression
+      expect(windowIcon).toBeTruthy();
+      expect(windowIcon.classList[0]).toBe('active-icon');
     });
     test('Then bills should be ordered from earliest to latest', () => {
       document.body.innerHTML = BillsUI({ data: bills });
@@ -32,6 +35,75 @@ describe('Given I am connected as an employee', () => {
       const antiChrono = (a, b) => ((a < b) ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
+    });
+
+  });
+  describe('When I am on Bills Page and I click on eye icon', () => {
+    test('Then bill image modal should show up', () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      }
+
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }));
+
+      document.body.innerHTML = BillsUI({ data: bills });
+
+      const bill = new Bills({
+        document, onNavigate, store: null, localStorage
+      });
+
+
+      const eyeIcon = screen.getAllByTestId('icon-eye')[0];
+      expect(eyeIcon).toBeTruthy();
+      const handleClickIconEye = jest.fn(() => bill.handleClickIconEye(eyeIcon));
+      eyeIcon.addEventListener('click', handleClickIconEye);
+      $.fn.modal = jest.fn();
+      fireEvent.click(eyeIcon);
+      expect(handleClickIconEye).toHaveBeenCalled();
+      const modal = screen.getByTestId('modal');
+      expect(modal).toBeTruthy();
+    });
+  });
+});
+
+describe('When I am on Bills Page and I click on new bill', () => {
+  test('Then should be on new bill page', () => {
+    const onNavigate = (pathname) => {
+      document.body.innerHTML = ROUTES({ pathname });
+    }
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    window.localStorage.setItem('user', JSON.stringify({
+      type: 'Employee'
+    }));
+
+    const bill = new Bills({
+      document, onNavigate, store: null, localStorage
+    });
+
+    const newBillBtn = screen.getByTestId('btn-new-bill');
+    expect(newBillBtn).toBeTruthy();
+
+    const handleNewBill = jest.fn(() => bill.handleClickNewBill());
+    newBillBtn.addEventListener('click', handleNewBill);
+    fireEvent.click(newBillBtn);
+    expect(handleNewBill).toHaveBeenCalled();
+
+    const text = screen.getByText('Envoyer une note de frais');
+    expect(text).toBeTruthy();
+  });
+
+  describe('When I am on Bills Page', () => {
+    test('fetches bills from mock API GET', async () => {
+      localStorage.setItem('user', JSON.stringify({ type: 'Employee'}));
+      const root = document.createElement('div');
+      root.setAttribute('id', 'root');
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.Bills);
     });
   });
 });

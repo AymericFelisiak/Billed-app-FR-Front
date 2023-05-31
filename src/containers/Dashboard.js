@@ -113,9 +113,8 @@ export default class {
       status: 'accepted',
       commentAdmin: $('#commentary2').val()
     };
-    this.updateBill(newBill).then(() => {
-      this.onNavigate(ROUTES_PATH.Dashboard);
-    })
+    this.updateBill(newBill);
+    this.onNavigate(ROUTES_PATH.Dashboard);
   };
 
   handleRefuseSubmit = (e, bill) => {
@@ -124,9 +123,8 @@ export default class {
       status: 'refused',
       commentAdmin: $('#commentary2').val()
     };
-    this.updateBill(newBill).then(() => {
-      this.onNavigate(ROUTES_PATH.Dashboard);
-    })
+    this.updateBill(newBill);
+    this.onNavigate(ROUTES_PATH.Dashboard);
   };
 
   handleShowTickets (e, bills, index) {

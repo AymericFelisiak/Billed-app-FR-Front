@@ -23,18 +23,21 @@ export default class NewBill {
     this.onNavigate(ROUTES_PATH.Bills);
   };
 
-  handleChangeFile = e => {
-    e.preventDefault();
+  handleChangeFile = () => {
     const inputField = this.document.querySelector('input[data-testid="file"]');
     const file = inputField.files[0];
-    const fileType = file.type;
-    const filePath = e.target.value.split(/\\/g);
-    const fileName = filePath[filePath.length - 1];
-    if (fileType === 'image/png' || fileType === 'image/jpg' || fileType === 'image/jpeg') {
-      inputField.setCustomValidity('');
-      this.inputFile = file;
-      this.fileName = fileName;
-    } else inputField.setCustomValidity('Invalid');
+    
+    if(file) {
+      const fileType = file.type;
+      const filePath = e.target.value.split(/\\/g);
+      const fileName = filePath[filePath.length - 1];
+
+      if (fileType === 'image/png' || fileType === 'image/jpg' || fileType === 'image/jpeg') {
+        inputField.setCustomValidity('');
+        this.inputFile = file;
+        this.fileName = fileName;
+      } else inputField.setCustomValidity('Invalid');
+    }
   };
 
   handleSubmit = e => {

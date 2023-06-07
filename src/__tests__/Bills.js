@@ -8,8 +8,8 @@ import Bills from '../containers/Bills.js';
 import { bills } from '../fixtures/bills.js';
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js';
 import { localStorageMock } from '../__mocks__/localStorage.js';
-import mockStore from '../__mocks__/store.js';
 import router from '../app/Router.js';
+import mockStore from '../__mocks__/store.js';
 
 describe('Given I am connected as an employee', () => {
   describe('When I am on Bills Page', () => {
@@ -37,6 +37,67 @@ describe('Given I am connected as an employee', () => {
       expect(dates).toEqual(datesSorted);
     });
 
+    test('fetches bills from mock API GET', async () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }));
+      const root = document.createElement('div');
+      root.setAttribute('id', 'root');
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.Bills);
+      await waitFor(() => screen.getByTestId('btn-new-bill'));
+      const btnNewBill = screen.getByTestId('btn-new-bill');
+      expect(btnNewBill).toBeTruthy();
+    });
+    
+    describe('When an error occurs on API', () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, 'bills');
+        Object.defineProperty(
+          window,
+          'localStorage',
+          { value: localStorageMock }
+        );
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee'
+        }));
+        const root = document.createElement('div');
+        root.setAttribute('id', 'root');
+        document.body.appendChild(root);
+        router();
+      });
+      test('fetches bills from an API and fails with 404 message error', async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error('Erreur 404'));
+            }
+          };
+        });
+        window.onNavigate(ROUTES_PATH.Bills);
+        await new Promise(process.nextTick);
+        const message = await screen.getByTestId('error-message');
+        expect(message).toBeTruthy();
+      });
+
+      test('fetches messages from an API and fails with 500 message error', async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error('Erreur 500'));
+            }
+          };
+        });
+
+        window.onNavigate(ROUTES_PATH.Bills);
+        await new Promise(process.nextTick);
+        const message = await screen.getByTestId('error-message');
+        expect(message).toBeTruthy();
+      });
+    });
+
   });
   describe('When I am on Bills Page and I click on eye icon', () => {
     test('Then bill image modal should show up', () => {
@@ -54,7 +115,6 @@ describe('Given I am connected as an employee', () => {
       const bill = new Bills({
         document, onNavigate, store: null, localStorage
       });
-
 
       const eyeIcon = screen.getAllByTestId('icon-eye')[0];
       expect(eyeIcon).toBeTruthy();
@@ -86,7 +146,7 @@ describe('When I am on Bills Page and I click on new bill', () => {
 
     const newBillBtn = screen.getByTestId('btn-new-bill');
     expect(newBillBtn).toBeTruthy();
-
+    
     const handleNewBill = jest.fn(() => bill.handleClickNewBill());
     newBillBtn.addEventListener('click', handleNewBill);
     fireEvent.click(newBillBtn);
@@ -94,16 +154,5 @@ describe('When I am on Bills Page and I click on new bill', () => {
 
     const text = screen.getByText('Envoyer une note de frais');
     expect(text).toBeTruthy();
-  });
-
-  describe('When I am on Bills Page', () => {
-    test('fetches bills from mock API GET', async () => {
-      localStorage.setItem('user', JSON.stringify({ type: 'Employee'}));
-      const root = document.createElement('div');
-      root.setAttribute('id', 'root');
-      document.body.append(root);
-      router();
-      window.onNavigate(ROUTES_PATH.Bills);
-    });
   });
 });

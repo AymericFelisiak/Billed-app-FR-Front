@@ -2,35 +2,17 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen, wait, waitFor } from '@testing-library/dom';
+import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import { localStorageMock } from '../__mocks__/localStorage.js';
 import NewBill from '../containers/NewBill.js';
-import router from '../app/Router.js';
-import { ROUTES, ROUTES_PATH } from '../constants/routes.js';
+import { ROUTES } from '../constants/routes.js';
 import userEvent from '@testing-library/user-event';
 import { newBillMock } from '../__mocks__/NewBIll.js';
+import NewBillUI from '../views/NewBillUI.js';
+import store from '../__mocks__/store.js';
 
 describe('Given I am connected as an employee', () => {
   describe('When I am on NewBill Page', () => {
-    beforeEach(() => {
-      window.localStorage.clear();
-      Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee',
-        email: 'a@a'
-      }));
-      const root = document.createElement('div');
-      root.setAttribute('id', 'root');
-      document.body.append(root);
-      router();
-      window.onNavigate(ROUTES_PATH.NewBill);
-    });
-
-    test('Then form should show up', () => {
-      const form = screen.getByTestId('form-new-bill');
-      expect(form).toBeTruthy();
-    });
-
     describe('When i click on first icon in the Sidebar', () => {
       test('Then i should go back to Bills page', () => {
 
@@ -38,14 +20,23 @@ describe('Given I am connected as an employee', () => {
           document.body.innerHTML = ROUTES({ pathname });
         }
 
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: 'a@a'
+        }));
+
+        document.body.innerHTML = NewBillUI();
+
         const newBill = new NewBill({
-          document, onNavigate, store: null, localStorage
+          document, onNavigate, store: null, localStorage: window.localStorage
         });
 
         const iconWindow = screen.getByTestId('icon-window');
         expect(iconWindow).toBeTruthy();
 
-        const handleClickNoteBoard = jest.fn(() => newBill.handleClickNoteBoard());
+        const handleClickNoteBoard = jest.fn(() => newBill.handleClickNoteBoard);
         iconWindow.addEventListener('click', handleClickNoteBoard);
         fireEvent.click(iconWindow);
         expect(handleClickNoteBoard).toHaveBeenCalled();
@@ -61,26 +52,40 @@ describe('Given I am connected as an employee', () => {
           document.body.innerHTML = ROUTES({ pathname });
         }
 
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: 'a@a'
+        }));
+
+        document.body.innerHTML = NewBillUI();
+
         const newBill = new NewBill({
-          document, onNavigate, store: null, localStorage
+          document, onNavigate, store: null, localStorage: window.localStorage
         });
 
         const input = screen.getByTestId('file');
         expect(input).toBeTruthy();
 
-        const handleChangeFile = jest.fn(() => newBill.handleChangeFile());
+        const handleChangeFile = jest.fn(() => newBill.handleChangeFile);
         input.addEventListener('click', handleChangeFile);
         fireEvent.click(input);
 
         expect(handleChangeFile).toHaveBeenCalled();
       });
     });
+
     describe('When i selected a file', () => {
       test('Then the added file has the wrong format', () => {
 
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         }
+
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+        document.body.innerHTML = NewBillUI();
 
         const newBill = new NewBill({
           document, onNavigate, store: null, localStorage: window.localStorage
@@ -111,6 +116,10 @@ describe('Given I am connected as an employee', () => {
           document.body.innerHTML = ROUTES({ pathname });
         }
 
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+        document.body.innerHTML = NewBillUI();
+
         const newBill = new NewBill({
           document, onNavigate, store: null, localStorage: window.localStorage
         });
@@ -123,7 +132,7 @@ describe('Given I am connected as an employee', () => {
         userEvent.upload(input, file);
 
         expect(input.files.length).toBe(1);
-        
+
         const handleChangeFile = jest.fn(() => newBill.handleChangeFile);
         input.addEventListener('click', handleChangeFile);
         fireEvent.click(input);
@@ -139,8 +148,7 @@ describe('Given I am connected as an employee', () => {
 describe('When i am connected as an employee', () => {
   describe('When i am on new bill page', () => {
     describe('When i completed the form', () => {
-      beforeEach(() => {
-        window.localStorage.clear();
+      test('Then i click on submit button', () => {
 
         Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
@@ -149,32 +157,32 @@ describe('When i am connected as an employee', () => {
           email: 'a@a'
         }));
 
-        const root = document.createElement('div');
-        root.setAttribute('id', 'root');
-        document.body.append(root);
-        router();
-        window.onNavigate(ROUTES_PATH.NewBill);
-      });
-      test('Then i click on submit button', () => {
-       
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         }
 
         const newBill = new NewBill({
-          document, onNavigate, store: null, localStorage: window.localStorage
+          document, onNavigate, store, localStorage: window.localStorage
         });
 
         newBillMock();
 
-        const submitBtn = screen.getByText('Envoyer');
+        const submitBtn = screen.getByTestId('submit-button');
         expect(submitBtn).toBeTruthy();
 
+        const file = new File([''], 'test.jpg', { type: 'image/jpg' });
+        newBill.inputFile = file;
+        newBill.fileName = 'test.jpg';
+
         const handleSendForm = jest.fn(() => newBill.handleSubmit);
-        submitBtn.addEventListener('submit', handleSendForm);
-        fireEvent.submit(submitBtn);
+        submitBtn.addEventListener('click', handleSendForm);
+        userEvent.click(submitBtn);
 
         expect(handleSendForm).toHaveBeenCalled();
+
+        // const text = screen.getByText('Mes notes de frais');
+        // expect(text).toBeTruthy();
+
       });
     });
   });

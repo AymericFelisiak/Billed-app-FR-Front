@@ -29,7 +29,7 @@ export default class NewBill {
     
     if(file) {
       const fileType = file.type;
-      const filePath = e.target.value.split(/\\/g);
+      const filePath = inputField.value.split(/\\/g);
       const fileName = filePath[filePath.length - 1];
 
       if (fileType === 'image/png' || fileType === 'image/jpg' || fileType === 'image/jpeg') {

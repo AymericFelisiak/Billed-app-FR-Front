@@ -5,11 +5,12 @@
 import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import { localStorageMock } from '../__mocks__/localStorage.js';
 import NewBill from '../containers/NewBill.js';
-import { ROUTES } from '../constants/routes.js';
+import { ROUTES, ROUTES_PATH } from '../constants/routes';
 import userEvent from '@testing-library/user-event';
 import { newBillMock } from '../__mocks__/NewBIll.js';
 import NewBillUI from '../views/NewBillUI.js';
 import store from '../__mocks__/store.js';
+import router from '../app/Router';
 
 describe('Given I am connected as an employee', () => {
   describe('When I am on NewBill Page', () => {
@@ -148,14 +149,17 @@ describe('Given I am connected as an employee', () => {
 describe('When i am connected as an employee', () => {
   describe('When i am on new bill page', () => {
     describe('When i completed the form', () => {
-      test('Then i click on submit button', () => {
+      test('Then i click on submit button', async () => {
+        document.body.innerHTML = '';
 
         Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-        window.localStorage.setItem('user', JSON.stringify({
-          type: 'Employee',
-          email: 'a@a'
-        }));
+        window.localStorage.setItem('user', JSON.stringify({ type: 'Employee', email: 'a@a' }));
+        const root = document.createElement('div');
+        root.setAttribute('id', 'root');
+        document.body.append(root);
+        router();
+        window.onNavigate(ROUTES_PATH.NewBill);
 
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
@@ -164,25 +168,22 @@ describe('When i am connected as an employee', () => {
         const newBill = new NewBill({
           document, onNavigate, store, localStorage: window.localStorage
         });
-
-        newBillMock();
-
         const submitBtn = screen.getByTestId('submit-button');
+        newBillMock();
         expect(submitBtn).toBeTruthy();
 
+        const fileInput = screen.getByTestId('file');
+        expect(fileInput).toBeTruthy();
+
         const file = new File([''], 'test.jpg', { type: 'image/jpg' });
-        newBill.inputFile = file;
-        newBill.fileName = 'test.jpg';
 
-        const handleSendForm = jest.fn(() => newBill.handleSubmit);
-        submitBtn.addEventListener('click', handleSendForm);
-        userEvent.click(submitBtn);
+        fireEvent.change(fileInput, {
+          target: {files: [file]},
+        });
 
-        expect(handleSendForm).toHaveBeenCalled();
-
-        // const text = screen.getByText('Mes notes de frais');
-        // expect(text).toBeTruthy();
-
+        await waitFor(() => fireEvent.click(submitBtn));
+        const text = screen.getByText('Mes notes de frais');
+        expect(text).toBeTruthy();
       });
     });
   });
